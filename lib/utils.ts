@@ -27,10 +27,10 @@ export function formatRelative(date: string | Date) {
 }
 
 export function getMatchColor(score: number) {
-  if (score >= 90) return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
-  if (score >= 75) return 'text-blue-400 bg-blue-400/10 border-blue-400/20'
-  if (score >= 60) return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20'
-  return 'text-slate-400 bg-slate-400/10 border-slate-400/20'
+  if (score >= 90) return 'text-[#10b981] bg-[#10b981]/10 border-[#10b981]/30'
+  if (score >= 75) return 'text-[#a78bfa] bg-[#8b5cf6]/15 border-[#8b5cf6]/30'
+  if (score >= 60) return 'text-[#3b82f6] bg-[#3b82f6]/10 border-[#3b82f6]/30'
+  return 'text-[#a1a1a1] bg-[#161616] border-[#1f1f1f]'
 }
 
 export function getTypeIcon(type: string) {
@@ -44,9 +44,9 @@ export function getTypeIcon(type: string) {
 
 export function getTypeColor(type: string) {
   switch (type) {
-    case 'event': return 'bg-violet-500/20 text-violet-300 border-violet-500/30'
-    case 'resource': return 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-    case 'announcement': return 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-    default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30'
+    case 'event': return 'bg-[#8b5cf6]/15 text-[#c4b5fd] border-[#8b5cf6]/30'
+    case 'resource': return 'bg-[#3b82f6]/15 text-[#93c5fd] border-[#3b82f6]/30'
+    case 'announcement': return 'bg-[#f59e0b]/15 text-[#fcd34d] border-[#f59e0b]/30'
+    default: return 'bg-[#161616] text-[#a1a1a1] border-[#1f1f1f]'
   }
 }

@@ -14,7 +14,7 @@ interface MatchedCandidate extends Profile {
 
 const PRESET_QUERIES = [
   'AI / ML Engineer with RAG & Gemini experience',
-  'Frontend craftsman with Next.js 14 & Tailwind',
+  'Frontend craftsman with Next.js & Tailwind',
   'Backend developer for high-scale PostgreSQL & APIs',
   'UI/UX Product Designer for hackathon prototyping',
 ]
@@ -26,7 +26,7 @@ export default function CollaboratorsPage() {
   const [connectedIds, setConnectedIds] = useState<Record<string, boolean>>({})
   const [hasSearched, setHasSearched] = useState(false)
 
-  // Load all candidates initially
+  // Load candidates initially
   useEffect(() => {
     async function loadCandidates() {
       const { data } = await supabase
@@ -68,22 +68,22 @@ export default function CollaboratorsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       <TopBar />
 
-      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex gap-6">
+      <div className="flex flex-1 max-w-[1400px] mx-auto w-full">
         <LeftSidebar />
 
-        <main className="flex-1 min-w-0 max-w-3xl space-y-6">
+        <main className="flex-1 min-w-0 max-w-3xl py-6 px-4 sm:px-6 space-y-6">
           {/* Header Banner */}
-          <div className="glass rounded-2xl p-6 border border-white/[0.08] relative overflow-hidden">
-            <div className="absolute -top-16 -right-16 w-48 h-48 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="bg-[#0a0a0a] rounded-xl p-6 border border-[#1f1f1f] relative overflow-hidden shadow-[0_2px_4px_0_rgba(0,0,0,0.5)]">
+            <div className="absolute -top-16 -right-16 w-48 h-48 bg-[#8b5cf6]/15 rounded-full blur-3xl pointer-events-none" />
             <div className="flex items-center gap-3 mb-2">
               <span className="text-2xl">🤝</span>
               <div>
-                <h1 className="text-xl font-bold text-white">Intelligent Teammate Matching</h1>
-                <p className="text-sm text-slate-400">
-                  Find collaborators and build your dream team with AI-driven skill matching.
+                <h1 className="text-lg sm:text-xl font-bold text-white">Intelligent Teammate Matching</h1>
+                <p className="text-xs sm:text-sm text-[#a1a1a1]">
+                  Discover collaborators and form high-velocity hackathon squads with AI skill matching.
                 </p>
               </div>
             </div>
@@ -101,18 +101,18 @@ export default function CollaboratorsPage() {
                   type="text"
                   value={requirement}
                   onChange={(e) => setRequirement(e.target.value)}
-                  placeholder="Describe your project or required skills (e.g. 'Need a Python RAG dev for Gemini hackathon')..."
+                  placeholder="Describe your ideal teammate (e.g. 'Need a Python RAG dev for Gemini hackathon')..."
                   className={cn(
-                    'w-full bg-white/[0.04] border border-white/10 rounded-xl',
-                    'px-4 py-3.5 text-sm text-white placeholder-slate-500',
-                    'focus:outline-none focus:border-violet-500/50 focus:bg-white/[0.06]',
+                    'w-full bg-[#111111] border border-[#1f1f1f] rounded-lg',
+                    'px-4 py-3 text-sm text-white placeholder-[#4a4a4a]',
+                    'focus:outline-none focus:border-[#8b5cf6] focus:shadow-[0_0_8px_rgba(139,92,246,0.3)]',
                     'transition-all duration-200'
                   )}
                 />
                 <button
                   type="submit"
                   disabled={loading || !requirement.trim()}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-md bg-[#8b5cf6] hover:bg-[#a78bfa] text-white text-xs font-semibold disabled:opacity-50 shadow-[0_0_8px_rgba(139,92,246,0.3)] transition-all flex items-center gap-1.5"
                 >
                   {loading ? (
                     <span>Matching...</span>
@@ -125,9 +125,9 @@ export default function CollaboratorsPage() {
                 </button>
               </div>
 
-              {/* Preset suggestion chips */}
+              {/* Preset suggestion chips with Section 8.4 badges */}
               <div className="flex items-center gap-2 flex-wrap pt-1">
-                <span className="text-xs text-slate-500 font-medium">Try presets:</span>
+                <span className="text-xs font-mono text-[#6b6b6b]">Try presets:</span>
                 {PRESET_QUERIES.map((preset) => (
                   <button
                     key={preset}
@@ -136,7 +136,7 @@ export default function CollaboratorsPage() {
                       setRequirement(preset)
                       handleMatch(preset)
                     }}
-                    className="text-xs px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06] text-slate-400 hover:text-violet-300 hover:border-violet-500/30 transition-colors"
+                    className="font-mono text-xs px-2.5 py-1 rounded-full bg-[#111111] border border-[#1f1f1f] text-[#a1a1a1] hover:text-[#c4b5fd] hover:border-[#8b5cf6]/40 hover:bg-[#8b5cf6]/10 transition-colors"
                   >
                     {preset}
                   </button>
@@ -151,7 +151,7 @@ export default function CollaboratorsPage() {
               <h2 className="text-base font-semibold text-white">
                 {hasSearched ? 'AI-Ranked Matches' : 'Available Community Members'}
               </h2>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs font-mono text-[#6b6b6b]">
                 {profiles.length} developer{profiles.length !== 1 ? 's' : ''} available
               </span>
             </div>
@@ -159,15 +159,15 @@ export default function CollaboratorsPage() {
             {loading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="glass rounded-2xl p-5 border border-white/[0.06] animate-pulse space-y-3">
-                    <div className="h-5 w-40 bg-white/[0.06] rounded" />
-                    <div className="h-4 w-full bg-white/[0.04] rounded" />
-                    <div className="h-4 w-3/4 bg-white/[0.04] rounded" />
+                  <div key={i} className="bg-[#0a0a0a] rounded-lg p-5 border border-[#1f1f1f] space-y-3">
+                    <div className="h-5 w-40 bg-[#161616] rounded shimmer" />
+                    <div className="h-4 w-full bg-[#111111] rounded shimmer" />
+                    <div className="h-4 w-3/4 bg-[#111111] rounded shimmer" />
                   </div>
                 ))}
               </div>
             ) : profiles.length === 0 ? (
-              <div className="glass rounded-2xl p-8 text-center text-slate-500 border border-white/[0.06]">
+              <div className="bg-[#0a0a0a] rounded-lg p-8 text-center text-[#6b6b6b] border border-[#1f1f1f]">
                 No profiles found matching this criteria.
               </div>
             ) : (
@@ -186,26 +186,26 @@ export default function CollaboratorsPage() {
                     <div
                       key={p.id}
                       className={cn(
-                        'glass rounded-2xl p-5 border transition-all duration-200',
+                        'bg-[#0a0a0a] rounded-lg p-5 border transition-all duration-200',
                         p.matchScore && p.matchScore >= 80
-                          ? 'border-violet-500/30 bg-violet-500/[0.03]'
-                          : 'border-white/[0.06] hover:border-white/10'
+                          ? 'border-[#8b5cf6]/40 bg-[#8b5cf6]/[0.03] shadow-[0_0_12px_rgba(139,92,246,0.1)]'
+                          : 'border-[#1f1f1f] hover:border-[#2e2e2e]'
                       )}
                     >
                       {/* Top row: Avatar + Name + Match Badge */}
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center font-bold text-white text-base shadow-md">
+                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#6d28d9] flex items-center justify-center font-bold text-white text-base shadow-[0_0_8px_rgba(139,92,246,0.3)] shrink-0">
                             {initials}
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold text-white text-base">{p.name}</h3>
-                              <span className="text-xs text-slate-500">@{p.username}</span>
+                              <span className="text-xs font-mono text-[#6b6b6b]">@{p.username}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                            <div className="flex items-center gap-2 text-xs text-[#a1a1a1] mt-0.5">
                               {p.location && <span>📍 {p.location}</span>}
-                              <span className="capitalize px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-[10px]">
+                              <span className="capitalize px-2 py-0.5 rounded-full bg-[#111111] border border-[#1f1f1f] font-mono text-[10px]">
                                 {p.role}
                               </span>
                             </div>
@@ -217,12 +217,12 @@ export default function CollaboratorsPage() {
                           <div className="flex flex-col items-end">
                             <span
                               className={cn(
-                                'text-xs font-bold px-2.5 py-1 rounded-full border',
+                                'font-mono text-xs font-bold px-2.5 py-1 rounded-full border',
                                 p.matchScore >= 85
-                                  ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
+                                  ? 'bg-[#10b981]/15 border-[#10b981]/40 text-[#10b981]'
                                   : p.matchScore >= 70
-                                    ? 'bg-violet-500/10 border-violet-500/40 text-violet-400'
-                                    : 'bg-amber-500/10 border-amber-500/40 text-amber-400'
+                                    ? 'bg-[#8b5cf6]/15 border-[#8b5cf6]/40 text-[#c4b5fd]'
+                                    : 'bg-[#f59e0b]/15 border-[#f59e0b]/40 text-[#fcd34d]'
                               )}
                             >
                               ⚡ {p.matchScore}% Match
@@ -232,16 +232,16 @@ export default function CollaboratorsPage() {
                       </div>
 
                       {/* Bio */}
-                      <p className="text-sm text-slate-300 mt-3 leading-relaxed">
+                      <p className="text-sm text-[#a1a1a1] mt-3 leading-relaxed">
                         {p.bio}
                       </p>
 
                       {/* AI Match Reason (if searched) */}
                       {p.matchReason && (
-                        <div className="mt-3 p-3 rounded-xl bg-violet-950/40 border border-violet-500/20 text-xs text-violet-200 flex items-start gap-2">
+                        <div className="mt-3 p-3 rounded-lg bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 text-xs text-[#c4b5fd] flex items-start gap-2">
                           <span className="text-sm">✨</span>
                           <div>
-                            <strong className="text-violet-300 font-medium">Why they match: </strong>
+                            <strong className="text-white font-medium">Why they match: </strong>
                             {p.matchReason}
                           </div>
                         </div>
@@ -258,10 +258,10 @@ export default function CollaboratorsPage() {
                               <span
                                 key={skill}
                                 className={cn(
-                                  'text-xs px-2.5 py-1 rounded-lg border font-medium transition-colors',
+                                  'font-mono text-xs px-2.5 py-1 rounded-md border font-medium transition-colors',
                                   isHighlighted
-                                    ? 'bg-violet-600/30 border-violet-500/50 text-violet-200'
-                                    : 'bg-white/[0.03] border-white/[0.06] text-slate-400'
+                                    ? 'bg-[#8b5cf6]/20 border-[#8b5cf6]/50 text-[#c4b5fd]'
+                                    : 'bg-[#111111] border-[#1f1f1f] text-[#a1a1a1]'
                                 )}
                               >
                                 {skill}
@@ -272,10 +272,10 @@ export default function CollaboratorsPage() {
                       )}
 
                       {/* Action footer */}
-                      <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-between">
-                        <div className="text-xs text-slate-500">
+                      <div className="mt-4 pt-3 border-t border-[#1f1f1f] flex items-center justify-between">
+                        <div className="text-xs text-[#6b6b6b]">
                           {p.interests?.length ? (
-                            <span>Interested in: {p.interests.slice(0, 3).join(', ')}</span>
+                            <span>Interests: {p.interests.slice(0, 3).join(', ')}</span>
                           ) : (
                             <span>Open for hackathon teams</span>
                           )}
@@ -284,10 +284,10 @@ export default function CollaboratorsPage() {
                           onClick={() => handleConnect(p.id)}
                           disabled={isConnected}
                           className={cn(
-                            'text-xs font-semibold px-4 py-2 rounded-xl border transition-all duration-200 active:scale-95',
+                            'text-xs font-semibold px-4 py-2 rounded-md border transition-all duration-200 active:scale-95',
                             isConnected
-                              ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-                              : 'bg-white/[0.05] border-white/10 text-white hover:bg-violet-600 hover:border-violet-500'
+                              ? 'bg-[#10b981]/15 border-[#10b981]/40 text-[#10b981]'
+                              : 'bg-[#111111] border-[#2e2e2e] text-white hover:bg-[#8b5cf6] hover:border-[#8b5cf6]'
                           )}
                         >
                           {isConnected ? '✓ Invitation Sent' : 'Connect / Invite →'}
@@ -300,10 +300,10 @@ export default function CollaboratorsPage() {
             )}
           </div>
         </main>
-
-        <AIChatWidget />
-        <MobileNav />
       </div>
+
+      <AIChatWidget />
+      <MobileNav />
     </div>
   )
 }

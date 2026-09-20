@@ -49,7 +49,7 @@ function SearchContent() {
       setAiAnswer(data.aiAnswer || '')
       setResults(data.results || [])
     } catch {
-      setAiAnswer('Search failed. Please try again.')
+      setAiAnswer('Search failed. Please check network connection and try again.')
     } finally {
       setLoading(false)
     }
@@ -71,11 +71,14 @@ function SearchContent() {
   ]
 
   return (
-    <div className="flex-1 min-w-0 max-w-3xl">
-      {/* Search bar */}
+    <div className="flex-1 min-w-0 max-w-3xl py-6 px-4 sm:px-6">
+      {/* Command Search Bar (Section 14.4) */}
       <form onSubmit={handleSubmit} className="mb-6">
-        <div className="relative">
-          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="relative shadow-[0_12px_24px_0_rgba(0,0,0,0.6)]">
+          <svg
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6b6b6b]"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z" />
           </svg>
           <input
@@ -83,99 +86,100 @@ function SearchContent() {
             type="text"
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
-            placeholder="Ask anything — find events, people, resources..."
+            placeholder="Search knowledge graph, events, teammates... (Ask anything)"
             className={cn(
-              'w-full bg-white/[0.04] border border-white/10 rounded-2xl',
-              'pl-12 pr-28 py-4 text-base text-white placeholder-slate-500',
-              'focus:outline-none focus:border-violet-500/50 focus:bg-white/[0.06]',
+              'w-full h-14 bg-[#0a0a0a] border border-[#2e2e2e] rounded-xl',
+              'pl-12 pr-28 text-sm sm:text-base text-white placeholder-[#4a4a4a]',
+              'focus:outline-none focus:border-[#8b5cf6] focus:shadow-[0_0_16px_rgba(139,92,246,0.35)]',
               'transition-all duration-200'
             )}
           />
           <button
             type="submit"
             disabled={loading || !inputVal.trim()}
-            className="absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 rounded-xl bg-violet-600 text-white text-sm font-medium hover:bg-violet-500 disabled:opacity-50 transition-colors"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 px-4 py-2 rounded-md bg-[#8b5cf6] text-white text-xs font-medium hover:bg-[#a78bfa] disabled:opacity-40 shadow-[0_0_8px_rgba(139,92,246,0.3)] transition-all"
           >
-            {loading ? '...' : 'Search'}
+            {loading ? 'Searching…' : 'Search'}
           </button>
         </div>
       </form>
 
-      {/* Not searched yet — suggestions */}
+      {/* Suggested Queries */}
       {!searched && (
-        <div className="fade-in">
-          <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold mb-3">Try asking...</p>
-          <div className="space-y-2">
+        <div className="space-y-3 fade-in">
+          <p className="text-xs font-mono uppercase tracking-wider text-[#6b6b6b] font-semibold">
+            Suggested Inquiries
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {SUGGESTIONS.map((s) => (
               <button
                 key={s}
                 onClick={() => { setInputVal(s); setQuery(s); doSearch(s) }}
-                className="w-full text-left glass glass-hover px-4 py-3 rounded-xl border border-white/[0.06] text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-3"
+                className="text-left bg-[#0a0a0a] hover:bg-[#111111] p-3.5 rounded-lg border border-[#1f1f1f] hover:border-[#2e2e2e] text-xs sm:text-sm text-[#a1a1a1] hover:text-white transition-all flex items-center gap-3 group"
               >
-                <span className="text-violet-500">⚡</span>
-                {s}
+                <span className="text-[#8b5cf6] group-hover:scale-110 transition-transform">⚡</span>
+                <span className="truncate">{s}</span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* Loading */}
+      {/* Loading Skeletons */}
       {loading && (
-        <div className="fade-in">
-          <div className="glass rounded-2xl p-6 border border-violet-500/20 mb-4">
+        <div className="space-y-4 fade-in">
+          <div className="bg-[#0a0a0a] rounded-xl p-5 border border-[#8b5cf6]/30">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-5 h-5 rounded-full bg-violet-500/20 animate-pulse" />
-              <div className="h-4 w-48 rounded bg-white/[0.06] shimmer" />
+              <div className="w-4 h-4 rounded-full bg-[#8b5cf6]/30 animate-pulse" />
+              <div className="h-4 w-40 rounded bg-[#161616] shimmer" />
             </div>
             <div className="space-y-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-3.5 rounded bg-white/[0.04] shimmer" style={{ width: `${90 - i * 10}%` }} />
-              ))}
+              <div className="h-3.5 w-full rounded bg-[#111111] shimmer" />
+              <div className="h-3.5 w-5/6 rounded bg-[#111111] shimmer" />
             </div>
           </div>
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="glass rounded-xl p-4 border border-white/[0.06]">
-                <div className="h-4 w-2/3 rounded bg-white/[0.06] shimmer mb-2" />
-                <div className="h-3 w-full rounded bg-white/[0.04] shimmer" />
-              </div>
-            ))}
-          </div>
+          {[1, 2].map((i) => (
+            <div key={i} className="bg-[#0a0a0a] rounded-lg p-4 border border-[#1f1f1f]">
+              <div className="h-4 w-1/2 rounded bg-[#161616] shimmer mb-2" />
+              <div className="h-3 w-full rounded bg-[#111111] shimmer" />
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Results */}
+      {/* Search Results */}
       {searched && !loading && (
         <div className="space-y-4 fade-in">
-          {/* AI Answer */}
+          {/* AI Synthesized Answer Card */}
           {aiAnswer && (
-            <div className="glass rounded-2xl p-5 border border-violet-500/20 bg-violet-500/5">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-xs">⚡</span>
-                <span className="text-sm font-semibold text-violet-300">AI Answer</span>
-                <span className="text-xs text-slate-600 ml-auto">Powered by Cognee + Gemini</span>
+            <div className="rounded-xl p-5 border border-[#8b5cf6]/30 bg-gradient-to-br from-[#8b5cf6]/15 via-[#8b5cf6]/5 to-transparent shadow-[0_0_16px_rgba(139,92,246,0.15)]">
+              <div className="flex items-center gap-2.5 mb-3">
+                <span className="w-6 h-6 rounded-md bg-gradient-to-br from-[#8b5cf6] to-[#a78bfa] flex items-center justify-center text-xs text-white">⚡</span>
+                <span className="text-sm font-semibold text-white">Cognee Semantic Answer</span>
+                <span className="text-[11px] font-mono text-[#6b6b6b] ml-auto">Graph-RAG</span>
               </div>
-              <p className="text-sm text-slate-300 leading-relaxed">{aiAnswer}</p>
+              <p className="text-sm text-[#a1a1a1] leading-relaxed">{aiAnswer}</p>
             </div>
           )}
 
-          {/* Raw results */}
+          {/* Granular Graph Match Results */}
           {results.length > 0 && (
-            <div>
-              <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold mb-3">
-                {results.length} relevant results
+            <div className="space-y-3 pt-2">
+              <p className="text-xs font-mono uppercase tracking-wider text-[#6b6b6b] font-semibold">
+                {results.length} Graph Entities Matched
               </p>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {results.map((r, i) => (
-                  <div key={i} className="glass glass-hover rounded-xl p-4 border border-white/[0.06]">
-                    <p className="text-sm text-slate-300 leading-relaxed line-clamp-3">
+                  <div key={i} className="bg-[#0a0a0a] hover:bg-[#111111] rounded-lg p-4 border border-[#1f1f1f] hover:border-[#2e2e2e] transition-all">
+                    <p className="text-sm text-[#a1a1a1] leading-relaxed line-clamp-3">
                       {r.text || String(r)}
                     </p>
                     {r.score !== undefined && (
-                      <p className="text-xs text-violet-400 mt-2 font-medium">
-                        {Math.round(r.score * 100)}% relevant
-                      </p>
+                      <div className="mt-2.5 flex items-center gap-2">
+                        <span className="font-mono text-xs text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded border border-[#10b981]/20 font-medium">
+                          {Math.round(r.score * 100)}% relevant
+                        </span>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -183,12 +187,12 @@ function SearchContent() {
             </div>
           )}
 
-          {/* No results */}
+          {/* No Results state */}
           {results.length === 0 && !aiAnswer && (
-            <div className="text-center py-12">
+            <div className="bg-[#0a0a0a] border border-[#1f1f1f] rounded-lg text-center py-16 px-4">
               <p className="text-3xl mb-3">🔍</p>
-              <p className="text-slate-400 font-medium">No results found for &quot;{query}&quot;</p>
-              <p className="text-slate-600 text-sm mt-1">Try seeding some data first at /api/seed</p>
+              <p className="text-white font-medium">No results found for &quot;{query}&quot;</p>
+              <p className="text-[#6b6b6b] text-xs mt-1">Try refining your terms or seeding sample community data.</p>
             </div>
           )}
         </div>
@@ -199,11 +203,11 @@ function SearchContent() {
 
 export default function SearchPage() {
   return (
-    <div className="min-h-screen bg-[#080c14] flex flex-col">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       <TopBar />
-      <div className="flex flex-1 max-w-7xl mx-auto w-full px-4 gap-6 py-6">
+      <div className="flex flex-1 max-w-[1400px] mx-auto w-full">
         <LeftSidebar />
-        <Suspense fallback={<div className="flex-1 text-center pt-20 text-slate-500">Loading...</div>}>
+        <Suspense fallback={<div className="flex-1 text-center pt-20 text-[#6b6b6b] font-mono text-xs">Loading Knowledge Graph...</div>}>
           <SearchContent />
         </Suspense>
       </div>

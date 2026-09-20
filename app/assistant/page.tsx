@@ -19,7 +19,7 @@ export default function AssistantPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hi! I'm **Communify AI**, your community intelligence assistant.\n\nI can help you:\n- 🎯 Find relevant events and resources\n- 🤝 Match you with potential collaborators\n- 💡 Answer questions about the community\n\nWhat would you like to know?",
+      content: "Hi! I'm **Communify AI**, your community intelligence assistant.\n\nI can help you:\n- 🎯 Find relevant events and resources\n- 🤝 Match you with potential collaborators\n- 💡 Answer questions about the community graph\n\nWhat would you like to explore today?",
     },
   ])
   const [input, setInput] = useState('')
@@ -67,7 +67,7 @@ export default function AssistantPage() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Sorry, something went wrong. Please try again.' },
+        { role: 'assistant', content: 'Sorry, something went wrong. Please check connection and try again.' },
       ])
     } finally {
       setLoading(false)
@@ -77,29 +77,29 @@ export default function AssistantPage() {
 
   function renderContent(text: string) {
     return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
       .replace(/\n/g, '<br/>')
   }
 
   return (
-    <div className="min-h-screen bg-[#080c14] flex flex-col">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       <TopBar />
-      <div className="flex flex-1 max-w-7xl mx-auto w-full px-4 gap-6 py-6">
+      <div className="flex flex-1 max-w-[1400px] mx-auto w-full">
         <LeftSidebar />
 
-        <main className="flex-1 flex flex-col min-w-0 max-w-3xl">
+        <main className="flex-1 flex flex-col min-w-0 max-w-3xl py-6 px-4 sm:px-6">
           {/* Header */}
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center glow-violet-sm">
+          <div className="flex items-center gap-3.5 mb-6 bg-[#0a0a0a] p-4 rounded-xl border border-[#1f1f1f]">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#a78bfa] flex items-center justify-center text-white shadow-[0_0_12px_rgba(139,92,246,0.35)] shrink-0">
               ⚡
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Communify AI Assistant</h1>
-              <p className="text-xs text-slate-500">Cognee Knowledge Graph · Gemini 1.5 Flash</p>
+              <h1 className="text-base sm:text-lg font-bold text-white">Communify AI Assistant</h1>
+              <p className="text-xs font-mono text-[#6b6b6b]">Cognee Knowledge Graph · Gemini 1.5 Flash</p>
             </div>
-            <div className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-emerald-500/20">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs text-slate-500">Online</span>
+            <div className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#111111] border border-[#1f1f1f]">
+              <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+              <span className="text-xs font-mono text-[#a1a1a1]">Online</span>
             </div>
           </div>
 
@@ -108,21 +108,21 @@ export default function AssistantPage() {
             {messages.map((msg, i) => (
               <div key={i} className={cn('flex gap-3', msg.role === 'user' ? 'justify-end' : 'justify-start', 'fade-in')}>
                 {msg.role === 'assistant' && (
-                  <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-xs shrink-0 mt-1">
+                  <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#8b5cf6] to-[#a78bfa] flex items-center justify-center text-xs shrink-0 mt-1 font-bold text-white">
                     ⚡
                   </div>
                 )}
                 <div
                   className={cn(
-                    'max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed',
+                    'max-w-[80%] px-4 py-3 rounded-lg text-sm leading-relaxed',
                     msg.role === 'user'
-                      ? 'bg-violet-600/80 text-white rounded-br-sm'
-                      : 'glass border border-white/[0.06] text-slate-200 rounded-bl-sm'
+                      ? 'bg-[#8b5cf6] text-white rounded-br-none shadow-[0_0_10px_rgba(139,92,246,0.25)]'
+                      : 'bg-[#0a0a0a] border border-[#1f1f1f] text-[#a1a1a1] rounded-bl-none'
                   )}
                   dangerouslySetInnerHTML={{ __html: renderContent(msg.content) }}
                 />
                 {msg.role === 'user' && (
-                  <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-xs shrink-0 mt-1 font-bold text-white">
+                  <div className="w-7 h-7 rounded-md bg-[#161616] border border-[#2e2e2e] flex items-center justify-center text-xs shrink-0 mt-1 font-bold text-white">
                     U
                   </div>
                 )}
@@ -131,11 +131,11 @@ export default function AssistantPage() {
 
             {loading && (
               <div className="flex gap-3 justify-start fade-in">
-                <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-xs shrink-0 mt-1">⚡</div>
-                <div className="glass border border-white/[0.06] px-4 py-3 rounded-2xl rounded-bl-sm">
-                  <div className="flex gap-1.5">
+                <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#8b5cf6] to-[#a78bfa] flex items-center justify-center text-xs shrink-0 mt-1 text-white">⚡</div>
+                <div className="bg-[#0a0a0a] border border-[#1f1f1f] px-4 py-3 rounded-lg rounded-bl-none">
+                  <div className="flex gap-1.5 items-center">
                     {[0, 1, 2].map((i) => (
-                      <span key={i} className="w-2 h-2 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+                      <span key={i} className="w-2 h-2 rounded-full bg-[#8b5cf6] animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
                     ))}
                   </div>
                 </div>
@@ -144,14 +144,14 @@ export default function AssistantPage() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Quick prompts */}
+          {/* Quick Prompts */}
           {messages.length === 1 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {QUICK_PROMPTS.map((p) => (
                 <button
                   key={p}
                   onClick={() => sendMessage(p.replace(/^[^ ]+ /, ''))}
-                  className="text-sm px-3 py-1.5 rounded-xl glass border border-white/[0.08] text-slate-400 hover:border-violet-500/30 hover:text-violet-300 transition-colors"
+                  className="font-mono text-xs px-3 py-1.5 rounded-full bg-[#111111] border border-[#1f1f1f] text-[#a1a1a1] hover:border-[#8b5cf6]/40 hover:text-white hover:bg-[#8b5cf6]/10 transition-colors"
                 >
                   {p}
                 </button>
@@ -159,8 +159,8 @@ export default function AssistantPage() {
             </div>
           )}
 
-          {/* Input */}
-          <div className="glass rounded-2xl border border-white/10 p-3 flex gap-3 items-end">
+          {/* Input Box */}
+          <div className="bg-[#0a0a0a] rounded-xl border border-[#1f1f1f] focus-within:border-[#8b5cf6] p-3 flex gap-3 items-end transition-colors shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
             <textarea
               ref={inputRef}
               value={input}
@@ -171,21 +171,23 @@ export default function AssistantPage() {
                   sendMessage()
                 }
               }}
-              placeholder="Ask anything about the community..."
+              placeholder="Ask anything about the developer community..."
               rows={2}
-              className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 outline-none resize-none leading-relaxed"
+              className="flex-1 bg-transparent text-sm text-white placeholder-[#4a4a4a] outline-none resize-none leading-relaxed"
             />
             <button
               onClick={() => sendMessage()}
               disabled={!input.trim() || loading}
-              className="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center disabled:opacity-40 hover:bg-violet-500 transition-colors shrink-0"
+              className="w-9 h-9 rounded-md bg-[#8b5cf6] hover:bg-[#a78bfa] flex items-center justify-center disabled:opacity-40 shadow-[0_0_8px_rgba(139,92,246,0.3)] transition-all shrink-0"
             >
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
               </svg>
             </button>
           </div>
-          <p className="text-center text-xs text-slate-700 mt-2">Press Enter to send · Shift+Enter for new line</p>
+          <p className="text-center text-[11px] font-mono text-[#4a4a4a] mt-2">
+            Press Enter to send · Shift+Enter for newline
+          </p>
         </main>
       </div>
       <MobileNav />

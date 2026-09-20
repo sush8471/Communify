@@ -71,7 +71,6 @@ export default function CreateEventPage() {
 
     setSubmitting(true)
     try {
-
       const { data, error: dbErr } = await supabase
         .from('posts')
         .insert({
@@ -103,29 +102,31 @@ export default function CreateEventPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080c14] flex flex-col">
+    <div className="min-h-screen bg-black text-white flex flex-col">
       <TopBar />
-      <div className="flex flex-1 max-w-7xl mx-auto w-full px-4 gap-6 py-6">
+      <div className="flex flex-1 max-w-[1400px] mx-auto w-full">
         <LeftSidebar />
 
-        <main className="flex-1 min-w-0 max-w-2xl">
+        <main className="flex-1 min-w-0 max-w-2xl py-6 px-4 sm:px-6">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-white mb-1">Create Post</h1>
-            <p className="text-sm text-slate-500">Share an event, resource, or announcement with the community</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">Create Community Post</h1>
+            <p className="text-xs sm:text-sm text-[#a1a1a1]">
+              Publish events, learning resources, or announcements into the Cognee graph.
+            </p>
           </div>
 
           {success ? (
-            <div className="glass rounded-2xl p-8 text-center border border-emerald-500/20 bg-emerald-500/5 fade-in">
+            <div className="bg-[#0a0a0a] rounded-xl p-8 text-center border border-[#10b981]/30 shadow-[0_0_16px_rgba(16,185,129,0.15)] fade-in">
               <p className="text-4xl mb-3">🎉</p>
-              <p className="text-lg font-semibold text-emerald-400">Published!</p>
-              <p className="text-sm text-slate-500 mt-1">Redirecting to dashboard...</p>
+              <p className="text-lg font-semibold text-[#10b981]">Post Published!</p>
+              <p className="text-xs text-[#a1a1a1] mt-1 font-mono">Redirecting to community feed…</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* Type selector */}
-              <div className="glass rounded-2xl p-4 border border-white/[0.06]">
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                  Post Type
+              <div className="bg-[#0a0a0a] rounded-lg p-5 border border-[#1f1f1f]">
+                <label className="block text-xs font-mono font-semibold text-[#a1a1a1] uppercase tracking-wider mb-3">
+                  Post Classification
                 </label>
                 <div className="flex gap-2">
                   {['event', 'resource', 'announcement'].map((t) => (
@@ -133,10 +134,10 @@ export default function CreateEventPage() {
                       key={t} type="button"
                       onClick={() => setForm((f) => ({ ...f, type: t }))}
                       className={cn(
-                        'flex-1 py-2 rounded-xl text-sm font-medium border transition-all capitalize',
+                        'flex-1 py-2 rounded-md text-xs sm:text-sm font-medium border transition-all capitalize',
                         form.type === t
-                          ? 'bg-violet-600/30 border-violet-500/50 text-violet-300'
-                          : 'border-white/[0.06] text-slate-500 hover:text-slate-300 hover:border-white/10'
+                          ? 'bg-[#8b5cf6]/15 border-[#8b5cf6]/50 text-[#c4b5fd] shadow-[0_0_8px_rgba(139,92,246,0.25)]'
+                          : 'bg-[#111111] border-[#1f1f1f] text-[#6b6b6b] hover:text-[#a1a1a1] hover:border-[#2e2e2e]'
                       )}
                     >
                       {t === 'event' ? '🎯' : t === 'resource' ? '📚' : '📢'} {t}
@@ -146,34 +147,34 @@ export default function CreateEventPage() {
               </div>
 
               {/* Title */}
-              <div className="glass rounded-2xl p-4 border border-white/[0.06]">
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <div className="bg-[#0a0a0a] rounded-lg p-5 border border-[#1f1f1f]">
+                <label className="block text-xs font-mono font-semibold text-[#a1a1a1] uppercase tracking-wider mb-2">
                   Title *
                 </label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                  placeholder="Give it a compelling title..."
-                  className="w-full bg-transparent text-white placeholder-slate-600 outline-none text-base font-medium"
+                  placeholder="Compelling and descriptive title..."
+                  className="w-full bg-[#111111] border border-[#1f1f1f] rounded-md px-3.5 py-2.5 text-sm text-white placeholder-[#4a4a4a] focus:outline-none focus:border-[#8b5cf6] font-medium"
                   required
                 />
               </div>
 
               {/* Description */}
-              <div className="glass rounded-2xl p-4 border border-white/[0.06]">
+              <div className="bg-[#0a0a0a] rounded-lg p-5 border border-[#1f1f1f]">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  <label className="block text-xs font-mono font-semibold text-[#a1a1a1] uppercase tracking-wider">
                     Description *
                   </label>
                   <button
                     type="button"
                     onClick={generateSummary}
                     disabled={!form.description.trim() || summarizing}
-                    className="text-xs text-violet-400 hover:text-violet-300 disabled:opacity-40 flex items-center gap-1 transition-colors"
+                    className="font-mono text-xs text-[#a78bfa] hover:text-[#c4b5fd] disabled:opacity-40 flex items-center gap-1.5 transition-colors"
                   >
                     {summarizing ? (
-                      <><span className="animate-spin">⚙️</span> Generating...</>
+                      <><span className="animate-spin">⚙️</span> Generating…</>
                     ) : (
                       <><span>⚡</span> AI Summarize</>
                     )}
@@ -182,60 +183,60 @@ export default function CreateEventPage() {
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                  placeholder="Describe your event, resource, or announcement in detail..."
+                  placeholder="Detail your event agenda, resource links, or community announcement..."
                   rows={5}
-                  className="w-full bg-transparent text-white placeholder-slate-600 outline-none text-sm leading-relaxed resize-none"
+                  className="w-full bg-[#111111] border border-[#1f1f1f] rounded-md px-3.5 py-2.5 text-sm text-white placeholder-[#4a4a4a] focus:outline-none focus:border-[#8b5cf6] leading-relaxed resize-none"
                   required
                 />
                 {aiSummary && (
-                  <div className="mt-3 pt-3 border-t border-white/[0.06]">
-                    <p className="text-xs text-violet-400 font-medium mb-1 flex items-center gap-1">
-                      ⚡ AI Summary
+                  <div className="mt-3 pt-3 border-t border-[#1f1f1f] bg-[#8b5cf6]/5 p-3 rounded-md">
+                    <p className="text-xs font-mono text-[#a78bfa] font-medium mb-1 flex items-center gap-1">
+                      ✨ AI Synthesized Summary
                     </p>
-                    <p className="text-xs text-slate-400 leading-relaxed">{aiSummary}</p>
+                    <p className="text-xs text-[#a1a1a1] leading-relaxed">{aiSummary}</p>
                   </div>
                 )}
               </div>
 
               {/* Location + Date (events only) */}
               {form.type === 'event' && (
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="glass rounded-2xl p-4 border border-white/[0.06]">
-                    <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                      Location
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="bg-[#0a0a0a] rounded-lg p-5 border border-[#1f1f1f]">
+                    <label className="block text-xs font-mono font-semibold text-[#a1a1a1] uppercase tracking-wider mb-2">
+                      Location / Mode
                     </label>
                     <input
                       type="text"
                       value={form.location}
                       onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
-                      placeholder="Online / City"
-                      className="w-full bg-transparent text-white placeholder-slate-600 outline-none text-sm"
+                      placeholder="Online / Discord / City"
+                      className="w-full bg-[#111111] border border-[#1f1f1f] rounded-md px-3 py-2 text-sm text-white placeholder-[#4a4a4a] focus:outline-none focus:border-[#8b5cf6]"
                     />
                   </div>
-                  <div className="glass rounded-2xl p-4 border border-white/[0.06]">
-                    <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  <div className="bg-[#0a0a0a] rounded-lg p-5 border border-[#1f1f1f]">
+                    <label className="block text-xs font-mono font-semibold text-[#a1a1a1] uppercase tracking-wider mb-2">
                       Date & Time
                     </label>
                     <input
                       type="datetime-local"
                       value={form.start_time}
                       onChange={(e) => setForm((f) => ({ ...f, start_time: e.target.value }))}
-                      className="w-full bg-transparent text-white outline-none text-sm [color-scheme:dark]"
+                      className="w-full bg-[#111111] border border-[#1f1f1f] rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-[#8b5cf6] [color-scheme:dark]"
                     />
                   </div>
                 </div>
               )}
 
               {/* Tags */}
-              <div className="glass rounded-2xl p-4 border border-white/[0.06]">
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                  Tags
+              <div className="bg-[#0a0a0a] rounded-lg p-5 border border-[#1f1f1f]">
+                <label className="block text-xs font-mono font-semibold text-[#a1a1a1] uppercase tracking-wider mb-3">
+                  Categorical Tags
                 </label>
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {form.tags.map((tag) => (
-                    <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-600/20 border border-violet-500/30 text-xs text-violet-300">
+                    <span key={tag} className="font-mono inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#8b5cf6]/15 border border-[#8b5cf6]/30 text-xs text-[#c4b5fd]">
                       #{tag}
-                      <button type="button" onClick={() => removeTag(tag)} className="text-violet-500 hover:text-red-400 transition-colors">×</button>
+                      <button type="button" onClick={() => removeTag(tag)} className="text-[#8b5cf6] hover:text-[#ef4444] transition-colors leading-none">×</button>
                     </span>
                   ))}
                 </div>
@@ -248,15 +249,15 @@ export default function CreateEventPage() {
                       if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput) }
                       if (e.key === ',') { e.preventDefault(); addTag(tagInput) }
                     }}
-                    placeholder="Add tag + press Enter"
-                    className="flex-1 bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-600 outline-none focus:border-violet-500/40"
+                    placeholder="Add tag and press Enter"
+                    className="flex-1 bg-[#111111] border border-[#1f1f1f] rounded-md px-3 py-2 text-sm text-white placeholder-[#4a4a4a] outline-none focus:border-[#8b5cf6]"
                   />
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {TAG_SUGGESTIONS.filter((t) => !form.tags.includes(t)).slice(0, 10).map((t) => (
                     <button
                       key={t} type="button" onClick={() => addTag(t)}
-                      className="text-xs px-2 py-0.5 rounded-full bg-white/[0.03] border border-white/[0.06] text-slate-500 hover:text-slate-300 hover:border-white/10 transition-colors"
+                      className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-[#111111] border border-[#1f1f1f] text-[#6b6b6b] hover:text-[#a1a1a1] hover:border-[#2e2e2e] transition-colors"
                     >
                       +{t}
                     </button>
@@ -265,7 +266,7 @@ export default function CreateEventPage() {
               </div>
 
               {error && (
-                <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+                <div className="px-4 py-3 rounded-md bg-[#ef4444]/15 border border-[#ef4444]/30 text-xs font-mono text-[#ef4444]">
                   {error}
                 </div>
               )}
@@ -274,13 +275,13 @@ export default function CreateEventPage() {
                 type="submit"
                 disabled={submitting}
                 className={cn(
-                  'w-full py-3.5 rounded-2xl text-sm font-semibold transition-all duration-200',
-                  'bg-gradient-to-r from-violet-600 to-violet-700 text-white',
-                  'hover:from-violet-500 hover:to-violet-600 hover:shadow-lg hover:shadow-violet-900/30',
-                  'active:scale-[0.98] disabled:opacity-60'
+                  'w-full py-3 rounded-md text-sm font-semibold transition-all duration-200',
+                  'bg-[#8b5cf6] hover:bg-[#a78bfa] text-white',
+                  'shadow-[0_0_12px_rgba(139,92,246,0.35)] hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]',
+                  'active:scale-[0.99] disabled:opacity-60'
                 )}
               >
-                {submitting ? '⚙️ Publishing...' : '🚀 Publish Post'}
+                {submitting ? 'Publishing to Knowledge Graph…' : '🚀 Publish Post'}
               </button>
             </form>
           )}
