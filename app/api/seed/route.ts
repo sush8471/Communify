@@ -4,6 +4,7 @@ import { supabase, DEMO_USER_ID } from '@/lib/supabase'
 import { cogneeAdd, cogneeProcess, formatPostForCognee } from '@/lib/cognee'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 const SEED_POSTS = [
   {

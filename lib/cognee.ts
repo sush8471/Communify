@@ -1,6 +1,10 @@
 // lib/cognee.ts
-const COGNEE_BASE = process.env.COGNEE_BASE_URL || 'https://tenant-678ec9db-5dc3-4e8e-a1ac-d22d8dd871fa.aws.cognee.ai'
-const COGNEE_KEY = process.env.COGNEE_API_KEY || '667a2c3569a352b13885328ee5120c277f60f33d2ad92ada53c651191e544740'
+const COGNEE_BASE =
+  process.env.COGNEE_BASE_URL ||
+  'https://tenant-678ec9db-5dc3-4e8e-a1ac-d22d8dd871fa.aws.cognee.ai'
+const COGNEE_KEY =
+  process.env.COGNEE_API_KEY ||
+  '667a2c3569a352b13885328ee5120c277f60f33d2ad92ada53c651191e544740'
 
 export interface CogneeResult {
   id?: string
@@ -23,6 +27,7 @@ export async function cogneeAdd(text: string, datasetName = 'community-global') 
         'x-api-key': COGNEE_KEY,
       },
       body: form,
+      signal: AbortSignal.timeout(10000),
     })
     if (!res.ok) {
       console.error('Cognee add failed:', await res.text())
@@ -48,6 +53,7 @@ export async function cogneeProcess(datasetName = 'community-global') {
         datasets: [datasetName],
         run_in_background: true,
       }),
+      signal: AbortSignal.timeout(10000),
     })
     if (!res.ok) {
       console.error('Cognee process failed:', await res.text())
@@ -60,7 +66,7 @@ export async function cogneeProcess(datasetName = 'community-global') {
   }
 }
 
-/** Semantic + graph search over Cognee memory */
+/** Semantic + graph search over Cognee memory with timeout safety */
 export async function cogneeSearch(
   query: string,
   datasetName = 'community-global',
@@ -78,9 +84,10 @@ export async function cogneeSearch(
         datasets: [datasetName],
         top_k: limit,
       }),
+      signal: AbortSignal.timeout(8000), // 8s timeout to protect serverless functions
     })
     if (!res.ok) {
-      console.error('Cognee search failed:', await res.text())
+      console.error('Cognee search failed with status:', res.status)
       return []
     }
     const data = await res.json()
@@ -101,8 +108,12 @@ export async function cogneeSearch(
       return results
     }
     return []
-  } catch (e) {
-    console.error('Cognee search error:', e)
+  } catch (e: any) {
+    if (e?.name === 'TimeoutError' || e?.name === 'AbortError') {
+      console.warn('Cognee search timed out after 8s, falling back to local graph/database.')
+    } else {
+      console.error('Cognee search error:', e)
+    }
     return []
   }
 }

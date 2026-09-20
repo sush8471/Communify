@@ -1,9 +1,57 @@
 // app/api/collaborators/match/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase, DEMO_USER_ID } from '@/lib/supabase'
+import { supabase, DEMO_USER_ID, type Profile } from '@/lib/supabase'
 import { geminiFlash } from '@/lib/gemini'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
+
+const DEFAULT_FALLBACK_CANDIDATES: Partial<Profile>[] = [
+  {
+    id: '00000000-0000-0000-0000-000000000002',
+    name: 'Sarah Chen',
+    username: 'sarahc',
+    bio: 'AI/ML Engineer specializing in RAG architectures, FastAPI microservices, and Gemini API integrations.',
+    location: 'San Francisco, CA',
+    skills: ['Python', 'FastAPI', 'RAG', 'Machine Learning', 'Gemini API'],
+    interests: ['AI Hackathons', 'Open Source', 'Autonomous Agents'],
+    role: 'member',
+    ai_summary: 'ML Engineer with deep expertise in Python, RAG pipelines, and LLM integrations.',
+  },
+  {
+    id: '00000000-0000-0000-0000-000000000003',
+    name: 'Arjun Mehta',
+    username: 'arjunm',
+    bio: 'Senior Frontend Craftsman passionate about Next.js 15, Tailwind CSS, TypeScript, and fluid animations.',
+    location: 'Bangalore, India',
+    skills: ['React', 'Next.js', 'TypeScript', 'Tailwind', 'UI/UX'],
+    interests: ['Frontend Performance', 'Design Systems', 'Web Animations'],
+    role: 'member',
+    ai_summary: 'Full-stack frontend specialist experienced with modern React and interactive UX.',
+  },
+  {
+    id: '00000000-0000-0000-0000-000000000004',
+    name: 'Elena Rostova',
+    username: 'elena_r',
+    bio: 'Backend & Cloud Architect with expertise in high-concurrency Go, PostgreSQL, Redis, and Supabase.',
+    location: 'Berlin, Germany',
+    skills: ['Go', 'PostgreSQL', 'Docker', 'Redis', 'Supabase'],
+    interests: ['Distributed Systems', 'Cloud Infrastructure', 'Fintech'],
+    role: 'member',
+    ai_summary: 'Backend engineer focused on distributed databases and scalable API infrastructure.',
+  },
+  {
+    id: '00000000-0000-0000-0000-000000000005',
+    name: 'Marcus Vance',
+    username: 'marcusv',
+    bio: 'Product Designer & Rapid Prototyper who codes in React. Fast Figma-to-code execution for hackathon winners.',
+    location: 'Austin, TX',
+    skills: ['UI/UX', 'Figma', 'Prototyping', 'React', 'Design Systems'],
+    interests: ['Hackathons', 'Developer Tools', 'Product Strategy'],
+    role: 'member',
+    ai_summary: 'Product designer focused on user research and rapid prototype development.',
+  },
+]
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,16 +62,26 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Fetch available community profiles (excluding demo user itself)
-    const { data: candidates, error } = await supabase
-      .from('profiles')
-      .select('id, name, username, bio, location, skills, interests, role, ai_summary')
-      .neq('id', DEMO_USER_ID)
+    let candidates: any[] = []
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, name, username, bio, location, skills, interests, role, ai_summary')
+        .neq('id', DEMO_USER_ID)
 
-    if (error || !candidates || candidates.length === 0) {
-      return NextResponse.json({ matches: [] })
+      if (!error && data && data.length > 0) {
+        candidates = data
+      }
+    } catch (dbErr) {
+      console.warn('Supabase profiles query error, using fallback candidate list:', dbErr)
     }
 
-    // 2. Use Gemini 3.6 Flash to evaluate compatibility & score candidates
+    // If database has no candidates yet, use fallback candidate pool
+    if (candidates.length === 0) {
+      candidates = DEFAULT_FALLBACK_CANDIDATES
+    }
+
+    // 2. Use Gemini to evaluate compatibility & score candidates
     const prompt = `
 You are an intelligent teammate & collaborator matching engine for a developer community platform.
 Analyze the following project requirement / skill request and score each candidate.
@@ -57,8 +115,8 @@ Return strictly JSON matching this format:
   {
     "id": "candidate-id-uuid",
     "matchScore": 95,
-    "matchReason": "Strong background in RAG pipelines and Gemini API directly aligns with your chatbot architecture.",
-    "highlightedSkills": ["Python", "RAG", "Gemini API"]
+    "matchReason": "Strong background in RAG pipelines directly aligns with your chatbot architecture.",
+    "highlightedSkills": ["Python", "RAG"]
   }
 ]
 `.trim()
@@ -73,7 +131,7 @@ Return strictly JSON matching this format:
       const text = result.response.text()
       scoredList = JSON.parse(text)
     } catch (aiErr) {
-      console.error('Gemini teammate match error:', aiErr)
+      console.error('Gemini teammate match error, using algorithmic scoring:', aiErr)
       // Fallback scoring based on keyword overlap
       const reqLower = requirement.toLowerCase()
       scoredList = candidates.map((c) => {
@@ -83,8 +141,8 @@ Return strictly JSON matching this format:
           id: c.id,
           matchScore: score,
           matchReason: matchingSkills.length
-            ? `Has direct experience with ${matchingSkills.join(', ')}.`
-            : 'Strong general engineering capabilities suitable for cross-functional collaboration.',
+            ? `Demonstrated domain expertise in ${matchingSkills.join(', ')}.`
+            : 'Well-rounded engineering skill set suitable for rapid hackathon execution.',
           highlightedSkills: matchingSkills.length ? matchingSkills : (c.skills || []).slice(0, 3),
         }
       })
@@ -94,7 +152,7 @@ Return strictly JSON matching this format:
     const matches = candidates
       .map((c) => {
         const scoreInfo = scoredList.find((s) => s.id === c.id) || {
-          matchScore: 65,
+          matchScore: 68,
           matchReason: 'Active community member open to hackathons and collaborations.',
           highlightedSkills: (c.skills || []).slice(0, 3),
         }
