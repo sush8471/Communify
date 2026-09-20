@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { supabase, type Profile, type Post } from '@/lib/supabase'
+import { supabase, DEMO_USER_ID, type Profile, type Post } from '@/lib/supabase'
 import { TopBar } from '@/components/layout/TopBar'
 import { LeftSidebar, MobileNav } from '@/components/layout/Sidebar'
 import { AIChatWidget } from '@/components/ai/AIChatWidget'
@@ -138,12 +138,26 @@ function PostRow({ post }: { post: Post }) {
   )
 }
 
+// Fallback demo profile (shown if DB row doesn't exist yet)
+const FALLBACK_PROFILE: Profile = {
+  id: DEMO_USER_ID,
+  name: 'Communify Demo',
+  username: 'demo',
+  bio: 'AI-powered community platform built at a hackathon 🚀',
+  location: 'India',
+  avatar_url: '',
+  skills: ['React', 'Next.js', 'TypeScript', 'AI', 'Cognee'],
+  interests: ['AI', 'hackathons', 'open-source'],
+  role: 'organizer',
+  ai_summary: 'Communify Demo is an organizer with expertise in React, Next.js, and AI. Passionate about building community tools.',
+  created_at: new Date().toISOString(),
+}
+
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<Profile | null>(null)
+  const [profile, setProfile] = useState<Profile>(FALLBACK_PROFILE)
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [showEdit, setShowEdit] = useState(false)
-  const [signingOut, setSigningOut] = useState(false)
   const [activeTab, setActiveTab] = useState<'activity' | 'skills'>('activity')
 
   useEffect(() => {
@@ -152,12 +166,9 @@ export default function ProfilePage() {
 
   async function loadProfile() {
     setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setLoading(false); return }
-
     const [{ data: prof }, { data: postsData }] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', user.id).single(),
-      supabase.from('posts').select('*').eq('author_id', user.id).order('created_at', { ascending: false }).limit(20),
+      supabase.from('profiles').select('*').eq('id', DEMO_USER_ID).single(),
+      supabase.from('posts').select('*').eq('author_id', DEMO_USER_ID).order('created_at', { ascending: false }).limit(20),
     ])
 
     if (prof) setProfile(prof as Profile)
@@ -165,17 +176,11 @@ export default function ProfilePage() {
     setLoading(false)
   }
 
-  async function signOut() {
-    setSigningOut(true)
-    await supabase.auth.signOut()
-    window.location.href = '/auth/login'
-  }
-
-  const initials = profile?.name
+  const initials = profile.name
     ? profile.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-    : '??'
+    : 'CD'
 
-  const roleLabel = profile?.role === 'organizer' ? '🎯 Organizer' : '🙋 Member'
+  const roleLabel = profile.role === 'organizer' ? '🎯 Organizer' : '🙋 Member'
 
   if (loading) {
     return (
@@ -188,17 +193,6 @@ export default function ProfilePage() {
             <div className="glass rounded-xl h-24 shimmer mb-3" />
             <div className="glass rounded-xl h-24 shimmer" />
           </main>
-        </div>
-      </div>
-    )
-  }
-
-  if (!profile) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-slate-400 mb-4">Profile not found.</p>
-          <Link href="/auth/login" className="text-violet-400 hover:underline text-sm">Sign in again</Link>
         </div>
       </div>
     )
@@ -223,7 +217,7 @@ export default function ProfilePage() {
                     {initials}
                   </div>
                 )}
-                <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-[#080c14]" title="Online" />
+                <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-[#080c14]" />
               </div>
 
               {/* Info */}
@@ -245,30 +239,17 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              {/* Actions */}
-              <div className="flex flex-col gap-2 shrink-0">
-                <button
-                  id="edit-profile-btn"
-                  onClick={() => setShowEdit(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/10 hover:bg-white/10 text-slate-300 text-xs font-medium transition-all"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit
-                </button>
-                <button
-                  id="sign-out-btn"
-                  onClick={signOut}
-                  disabled={signingOut}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 text-xs font-medium transition-all disabled:opacity-60"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                  {signingOut ? 'Signing out…' : 'Sign out'}
-                </button>
-              </div>
+              {/* Edit button */}
+              <button
+                id="edit-profile-btn"
+                onClick={() => setShowEdit(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/10 hover:bg-white/10 text-slate-300 text-xs font-medium transition-all shrink-0"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit
+              </button>
             </div>
 
             {/* AI summary */}

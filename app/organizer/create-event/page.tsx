@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase, DEMO_USER_ID } from '@/lib/supabase'
 import { TopBar } from '@/components/layout/TopBar'
 import { LeftSidebar, MobileNav } from '@/components/layout/Sidebar'
 import { AIChatWidget } from '@/components/ai/AIChatWidget'
@@ -71,18 +71,12 @@ export default function CreateEventPage() {
 
     setSubmitting(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        setError('Please sign in to post')
-        setSubmitting(false)
-        return
-      }
 
       const { data, error: dbErr } = await supabase
         .from('posts')
         .insert({
           ...form,
-          author_id: user.id,
+          author_id: DEMO_USER_ID,
           ai_summary: aiSummary,
           status: 'published',
           upvotes: 0,

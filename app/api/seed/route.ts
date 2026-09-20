@@ -1,6 +1,6 @@
 // app/api/seed/route.ts — Run once to populate Supabase + Cognee
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, DEMO_USER_ID } from '@/lib/supabase'
 import { cogneeAdd, cogneeProcess, formatPostForCognee } from '@/lib/cognee'
 
 const SEED_POSTS = [
@@ -68,34 +68,34 @@ const SEED_POSTS = [
 
 export async function GET() {
   try {
-    // Get first user as author (or create a system user)
-    const { data: profiles } = await supabase.from('profiles').select('id').limit(1)
-    const authorId = profiles?.[0]?.id
-
-    if (!authorId) {
-      return NextResponse.json({
-        error: 'No profiles found. Please sign up first, then run /api/seed',
-        hint: 'Create an account at /auth/signup then revisit this URL',
-      }, { status: 400 })
-    }
+    // Ensure demo profile exists
+    await supabase.from('profiles').upsert({
+      id: DEMO_USER_ID,
+      name: 'Communify Demo',
+      username: 'demo',
+      bio: 'Demo account for hackathon.',
+      location: 'India',
+      skills: ['React', 'Next.js', 'AI', 'TypeScript'],
+      interests: ['AI', 'hackathons', 'open-source'],
+      role: 'organizer',
+      ai_summary: 'The Communify demo organizer account.',
+    })
 
     const insertedPosts = []
 
     for (const post of SEED_POSTS) {
       const { data, error } = await supabase
         .from('posts')
-        .insert({ ...post, author_id: authorId, status: 'published' })
+        .insert({ ...post, author_id: DEMO_USER_ID, status: 'published' })
         .select()
         .single()
 
       if (!error && data) {
         insertedPosts.push(data)
-        // Index in Cognee
         await cogneeAdd(formatPostForCognee(post), 'community-global')
       }
     }
 
-    // Build knowledge graph from all indexed content
     await cogneeProcess('community-global')
 
     return NextResponse.json({

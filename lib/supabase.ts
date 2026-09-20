@@ -6,6 +6,11 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// ── Demo / hackathon mode ──────────────────────────────────────────────────
+// No real auth required. All writes use this fixed UUID as the author.
+export const DEMO_USER_ID = '00000000-0000-0000-0000-000000000001'
+
+
 export type Profile = {
   id: string
   name: string
