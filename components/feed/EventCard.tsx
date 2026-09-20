@@ -1,6 +1,8 @@
 'use client'
+import { useState } from 'react'
 import { cn, formatDate, getTypeColor, getTypeIcon } from '@/lib/utils'
 import { MatchBadge } from '@/components/ai/MatchBadge'
+import { ReportModal } from '@/components/feed/ReportModal'
 import type { Post } from '@/lib/supabase'
 
 interface EventCardProps {
@@ -11,11 +13,13 @@ interface EventCardProps {
 }
 
 export function EventCard({ post, matchScore, className, onRegister }: EventCardProps) {
+  const [showReport, setShowReport] = useState(false)
+
   return (
     <div
       className={cn(
         'group glass glass-hover rounded-2xl overflow-hidden border border-white/[0.06]',
-        'transition-all duration-300',
+        'transition-all duration-300 relative',
         className
       )}
     >
@@ -45,11 +49,26 @@ export function EventCard({ post, matchScore, className, onRegister }: EventCard
             </span>
             {matchScore !== undefined && <MatchBadge score={matchScore} />}
           </div>
-          {post.start_time && (
-            <span className="text-xs text-slate-500 whitespace-nowrap shrink-0">
-              {formatDate(post.start_time)}
-            </span>
-          )}
+          <div className="flex items-center gap-2 shrink-0">
+            {post.start_time && (
+              <span className="text-xs text-slate-500 whitespace-nowrap">
+                {formatDate(post.start_time)}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowReport(true)
+              }}
+              title="Report content"
+              className="text-slate-500 hover:text-rose-400 p-1 rounded-md hover:bg-white/[0.05] transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Title */}
@@ -63,7 +82,7 @@ export function EventCard({ post, matchScore, className, onRegister }: EventCard
         </p>
 
         {/* Tags */}
-        {post.tags?.length > 0 && (
+        {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
             {post.tags.slice(0, 4).map((tag) => (
               <span
@@ -90,6 +109,7 @@ export function EventCard({ post, matchScore, className, onRegister }: EventCard
         {/* Actions */}
         {post.type === 'event' && onRegister && (
           <button
+            type="button"
             onClick={() => onRegister(post.id)}
             className="w-full py-2 rounded-xl text-sm font-medium bg-violet-600/20 border border-violet-500/30 text-violet-300 hover:bg-violet-600/40 hover:border-violet-500/60 transition-all duration-200 active:scale-95"
           >
@@ -97,6 +117,13 @@ export function EventCard({ post, matchScore, className, onRegister }: EventCard
           </button>
         )}
       </div>
+
+      <ReportModal
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        postId={post.id}
+        postTitle={post.title}
+      />
     </div>
   )
 }
