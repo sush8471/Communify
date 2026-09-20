@@ -23,7 +23,7 @@ export function TopBar() {
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-xs">
             ⚡
           </div>
-          <span className="font-bold text-sm gradient-text">Linkfy AI</span>
+          <span className="font-bold text-sm gradient-text">Communify</span>
         </Link>
 
         {/* Search */}

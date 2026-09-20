@@ -26,7 +26,7 @@ export async function streamAnswer(
 ) {
   const system =
     systemPrompt ||
-    `You are Linkfy AI, an intelligent assistant for a community platform. 
+    `You are Communify AI, an intelligent assistant for a community platform. 
 Answer based on the provided context. Be concise, helpful, and cite specific events or people when relevant.
 If you reference an event or resource, mention its name clearly.`
 

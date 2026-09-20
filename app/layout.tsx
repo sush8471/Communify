@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-  title: 'Linkfy AI — Discover. Connect. Collaborate.',
+  title: 'Communify — Discover. Connect. Collaborate.',
   description:
     'AI-powered community platform. Find relevant events, resources, and collaborators with semantic search and intelligent matching.',
   keywords: ['community', 'AI', 'events', 'collaboration', 'hackathon', 'networking'],

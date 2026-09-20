@@ -19,7 +19,7 @@ export default function AssistantPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hi! I'm **Linkfy AI**, your community intelligence assistant.\n\nI can help you:\n- 🎯 Find relevant events and resources\n- 🤝 Match you with potential collaborators\n- 💡 Answer questions about the community\n\nWhat would you like to know?",
+      content: "Hi! I'm **Communify AI**, your community intelligence assistant.\n\nI can help you:\n- 🎯 Find relevant events and resources\n- 🤝 Match you with potential collaborators\n- 💡 Answer questions about the community\n\nWhat would you like to know?",
     },
   ])
   const [input, setInput] = useState('')
@@ -94,7 +94,7 @@ export default function AssistantPage() {
               ⚡
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Linkfy AI Assistant</h1>
+              <h1 className="text-xl font-bold text-white">Communify AI Assistant</h1>
               <p className="text-xs text-slate-500">Cognee Knowledge Graph · Gemini 1.5 Flash</p>
             </div>
             <div className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-emerald-500/20">

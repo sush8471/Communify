@@ -1,4 +1,4 @@
--- Linkfy AI — Supabase Schema
+-- Communify — Supabase Schema
 -- Run this in Supabase SQL Editor: https://supabase.com/dashboard/project/xmgdihynbjyuaqebbfsj/sql
 
 -- Profiles (extends auth.users)

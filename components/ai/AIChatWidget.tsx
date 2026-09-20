@@ -20,7 +20,7 @@ export function AIChatWidget() {
     {
       role: 'assistant',
       content:
-        "Hi! I'm **Linkfy AI** 👋 Ask me anything about events, resources, or finding collaborators in this community.",
+        "Hi! I'm **Communify AI** 👋 Ask me anything about events, resources, or finding collaborators in this community.",
     },
   ])
   const [input, setInput] = useState('')
@@ -119,7 +119,7 @@ export function AIChatWidget() {
               ⚡
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Linkfy AI</p>
+              <p className="text-sm font-semibold text-white">Communify AI</p>
               <p className="text-xs text-slate-500">Powered by Cognee + Gemini</p>
             </div>
             <div className="ml-auto flex items-center gap-1">

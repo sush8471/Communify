@@ -53,10 +53,10 @@ const SEED_POSTS = [
     ai_summary: 'A hands-on event for developers entering Web3. Covers Solidity basics and smart contract deployment, ending with participants shipping their first DApp.',
   },
   {
-    type: 'announcement', title: 'Linkfy AI is Now Live! 🚀',
-    description: 'Welcome to Linkfy AI — your AI-powered community platform. Discover events, find collaborators, and ask our AI anything about your community.',
+    type: 'announcement', title: 'Communify is Now Live! 🚀',
+    description: 'Welcome to Communify — your AI-powered community platform. Discover events, find collaborators, and ask our AI anything about your community.',
     tags: ['announcement', 'platform', 'ai'], location: '',
-    ai_summary: 'Linkfy AI is officially live! Use AI-powered semantic search to discover events, find teammates with matching skills, and get instant answers from the community knowledge assistant.',
+    ai_summary: 'Communify is officially live! Use AI-powered semantic search to discover events, find teammates with matching skills, and get instant answers from the community knowledge assistant.',
   },
   {
     type: 'resource', title: 'Open Source Contribution Guide for Beginners',

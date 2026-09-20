@@ -42,7 +42,7 @@ export function LeftSidebar() {
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center text-sm font-bold glow-violet-sm">
             ⚡
           </div>
-          <span className="font-bold text-lg gradient-text">Linkfy AI</span>
+          <span className="font-bold text-lg gradient-text">Communify</span>
         </Link>
       </div>
 

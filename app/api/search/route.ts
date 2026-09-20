@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   if (contextTexts.length > 0) {
     try {
       const prompt = `
-You are Linkfy AI search assistant. Based on the community knowledge below, answer the user's search query in 2-4 sentences. Be specific, mention event/resource names when available.
+You are Communify AI search assistant. Based on the community knowledge below, answer the user's search query in 2-4 sentences. Be specific, mention event/resource names when available.
 
 Community Knowledge:
 ${contextTexts.map((t, i) => `[${i + 1}] ${t}`).join('\n\n')}
