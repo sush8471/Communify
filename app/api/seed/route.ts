@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server'
 import { supabase, DEMO_USER_ID } from '@/lib/supabase'
 import { cogneeAdd, cogneeProcess, formatPostForCognee } from '@/lib/cognee'
 
+export const dynamic = 'force-dynamic'
+
 const SEED_POSTS = [
   {
     type: 'event', title: 'React Summit 2025',

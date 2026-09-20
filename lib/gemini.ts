@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 
 const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
-export const geminiFlash = genai.getGenerativeModel({ model: 'gemini-1.5-flash' })
+export const geminiFlash = genai.getGenerativeModel({ model: 'gemini-3.6-flash' })
 
 /** Summarize content in 2-3 engaging sentences */
 export async function summarizeContent(text: string): Promise<string> {

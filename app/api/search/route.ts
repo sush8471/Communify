@@ -11,8 +11,29 @@ export async function POST(req: NextRequest) {
   }
 
   // Search Cognee knowledge graph
-  const results = await cogneeSearch(query, 'community-global', 8)
-  const contextTexts = results.map((r) => r.text || String(r)).filter(Boolean)
+  let results = await cogneeSearch(query, 'community-global', 8)
+  let contextTexts = results.map((r) => r.text || String(r)).filter(Boolean)
+
+  // Fallback: If Cognee is still indexing or returns empty, fetch matching posts from Supabase
+  if (contextTexts.length === 0) {
+    try {
+      const { supabase } = await import('@/lib/supabase')
+      const { data: posts } = await supabase
+        .from('posts')
+        .select('*')
+        .or(`title.ilike.%${query}%,description.ilike.%${query}%,location.ilike.%${query}%`)
+        .limit(6)
+
+      if (posts && posts.length > 0) {
+        results = posts.map((p) => ({
+          text: `[${p.type.toUpperCase()}] ${p.title}\n${p.ai_summary || p.description}\nLocation: ${p.location || 'Online'}`,
+        }))
+        contextTexts = results.map((r) => r.text)
+      }
+    } catch (err) {
+      console.error('Supabase search fallback error:', err)
+    }
+  }
 
   // Generate a natural language answer with Gemini
   let aiAnswer = ''
@@ -26,7 +47,7 @@ ${contextTexts.map((t, i) => `[${i + 1}] ${t}`).join('\n\n')}
 
 User Query: ${query}
 
-Answer (be helpful and specific):`.trim()
+Answer (be helpful, concise, and specific):`.trim()
 
       const result = await geminiFlash.generateContent(prompt)
       aiAnswer = result.response.text()

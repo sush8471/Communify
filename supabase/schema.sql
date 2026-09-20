@@ -2,8 +2,9 @@
 -- Run this in Supabase SQL Editor: https://supabase.com/dashboard/project/xmgdihynbjyuaqebbfsj/sql
 
 -- Profiles (extends auth.users)
+-- Profiles (decoupled from auth.users for demo/hackathon mode)
 create table if not exists profiles (
-  id          uuid references auth.users on delete cascade primary key,
+  id          uuid primary key default gen_random_uuid(),
   name        text,
   username    text unique,
   bio         text,
@@ -17,7 +18,10 @@ create table if not exists profiles (
   updated_at  timestamptz default now()
 );
 
--- Auto-create profile on signup
+-- If table already existed with auth.users foreign key constraint, drop it:
+alter table profiles drop constraint if exists profiles_id_fkey;
+
+-- Auto-create profile on signup (optional fallback if auth is re-enabled)
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
@@ -26,7 +30,8 @@ begin
     new.id,
     coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
     new.raw_user_meta_data->>'avatar_url'
-  );
+  )
+  on conflict (id) do nothing;
   return new;
 end;
 $$ language plpgsql security definer;
@@ -75,25 +80,24 @@ create table if not exists notifications (
   created_at  timestamptz default now()
 );
 
--- Row Level Security
+-- Row Level Security (Demo Mode: Open read/write for hackathon demo)
 alter table profiles enable row level security;
 alter table posts enable row level security;
 alter table registrations enable row level security;
 alter table notifications enable row level security;
 
--- Profiles: public read, own write
-create policy "Public profiles are viewable by everyone" on profiles for select using (true);
-create policy "Users can update their own profile" on profiles for update using (auth.uid() = id);
+-- Drop old restrictive policies if they exist
+drop policy if exists "Public profiles are viewable by everyone" on profiles;
+drop policy if exists "Users can update their own profile" on profiles;
+drop policy if exists "Allow demo profiles insert" on profiles;
+drop policy if exists "Allow demo profiles all" on profiles;
+drop policy if exists "Posts are viewable by everyone" on posts;
+drop policy if exists "Authenticated users can create posts" on posts;
+drop policy if exists "Authors can update their posts" on posts;
+drop policy if exists "Allow demo posts all" on posts;
 
--- Posts: public read, authenticated create
-create policy "Posts are viewable by everyone" on posts for select using (true);
-create policy "Authenticated users can create posts" on posts for insert with check (auth.uid() = author_id);
-create policy "Authors can update their posts" on posts for update using (auth.uid() = author_id);
-
--- Registrations: own read/write
-create policy "Users can view their own registrations" on registrations for select using (auth.uid() = user_id);
-create policy "Users can register" on registrations for insert with check (auth.uid() = user_id);
-create policy "Users can cancel their registration" on registrations for delete using (auth.uid() = user_id);
-
--- Notifications: own only
-create policy "Users can view their own notifications" on notifications for select using (auth.uid() = user_id);
+-- Open policies for demo mode (allows unauthenticated anon key to insert & read)
+create policy "Allow demo profiles all" on profiles for all using (true) with check (true);
+create policy "Allow demo posts all" on posts for all using (true) with check (true);
+create policy "Allow demo registrations all" on registrations for all using (true) with check (true);
+create policy "Allow demo notifications all" on notifications for all using (true) with check (true);

@@ -1,11 +1,6 @@
 // lib/cognee.ts
-const COGNEE_BASE = process.env.COGNEE_BASE_URL
-const COGNEE_KEY = process.env.COGNEE_API_KEY
-
-const headers = {
-  'Authorization': `Bearer ${COGNEE_KEY}`,
-  'Content-Type': 'application/json',
-}
+const COGNEE_BASE = process.env.COGNEE_BASE_URL || 'https://tenant-678ec9db-5dc3-4e8e-a1ac-d22d8dd871fa.aws.cognee.ai'
+const COGNEE_KEY = process.env.COGNEE_API_KEY || '667a2c3569a352b13885328ee5120c277f60f33d2ad92ada53c651191e544740'
 
 export interface CogneeResult {
   id?: string
@@ -14,13 +9,20 @@ export interface CogneeResult {
   metadata?: Record<string, unknown>
 }
 
-/** Feed raw text into Cognee memory */
+/** Feed raw text into Cognee memory via multipart/form-data */
 export async function cogneeAdd(text: string, datasetName = 'community-global') {
   try {
+    const form = new FormData()
+    const blob = new Blob([text], { type: 'text/plain' })
+    form.append('data', blob, `doc-${Date.now()}.txt`)
+    form.append('datasetName', datasetName)
+
     const res = await fetch(`${COGNEE_BASE}/api/v1/add`, {
       method: 'POST',
-      headers,
-      body: JSON.stringify({ text, datasetName }),
+      headers: {
+        'x-api-key': COGNEE_KEY,
+      },
+      body: form,
     })
     if (!res.ok) {
       console.error('Cognee add failed:', await res.text())
@@ -33,13 +35,19 @@ export async function cogneeAdd(text: string, datasetName = 'community-global') 
   }
 }
 
-/** Build knowledge graph from added data (async — fire and forget) */
+/** Build knowledge graph from added data (async in background) */
 export async function cogneeProcess(datasetName = 'community-global') {
   try {
     const res = await fetch(`${COGNEE_BASE}/api/v1/cognify`, {
       method: 'POST',
-      headers,
-      body: JSON.stringify({ datasetName }),
+      headers: {
+        'x-api-key': COGNEE_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        datasets: [datasetName],
+        run_in_background: true,
+      }),
     })
     if (!res.ok) {
       console.error('Cognee process failed:', await res.text())
@@ -61,16 +69,38 @@ export async function cogneeSearch(
   try {
     const res = await fetch(`${COGNEE_BASE}/api/v1/search`, {
       method: 'POST',
-      headers,
-      body: JSON.stringify({ searchQuery: query, datasetName, limit }),
+      headers: {
+        'x-api-key': COGNEE_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query,
+        datasets: [datasetName],
+        top_k: limit,
+      }),
     })
     if (!res.ok) {
       console.error('Cognee search failed:', await res.text())
       return []
     }
     const data = await res.json()
-    // Normalize: Cognee may return array or { results: [] }
-    return Array.isArray(data) ? data : (data.results ?? [])
+    // Cognee returns array of results: [{ search_result: [...] }] or strings
+    if (Array.isArray(data)) {
+      const results: CogneeResult[] = []
+      for (const item of data) {
+        if (typeof item === 'string') {
+          results.push({ text: item })
+        } else if (item.search_result && Array.isArray(item.search_result)) {
+          for (const s of item.search_result) {
+            results.push({ text: typeof s === 'string' ? s : JSON.stringify(s) })
+          }
+        } else if (item.text) {
+          results.push(item)
+        }
+      }
+      return results
+    }
+    return []
   } catch (e) {
     console.error('Cognee search error:', e)
     return []
